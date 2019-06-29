@@ -8,8 +8,9 @@
         <span v-bind:style="{ 'color': colors[index] }" class="repolisting"> {{ repo }} </span> 
       </h2>
     </div>
-
-      <div class="row">
+    <div v-if="!loaded" style="text-align: center; margin-left: 44.4%; position: relative !important" class="col col-12 spinner loader"></div>
+   
+    <div class="row" v-if="loaded">
 
       <!-- <div class="col col-12">
         <dual-axis-contributions></dual-axis-contributions>
@@ -133,8 +134,7 @@ module.exports = {
   components: {
     DynamicLineChart,
     BubbleChart,
-    StackedBarChart,
-    DualAxisContributions
+    StackedBarChart
   },
   created() {
     let repos = []

@@ -1,9 +1,7 @@
 <template>
   <div ref="holder">
-    <!-- <spinner :v-show="!loaded" style="top: 30%; position: relative; transform: translateY(-50%); margin: 3.5rem 3.9rem 0px auto;"></spinner> -->
     <div class="groupedbarchart">
-      <div v-if="mount" :id="source"></div>
-      <!-- <vega-lite :spec="spec" :data="values"></vega-lite> -->
+      <vega-lite :spec="spec" :data="values"></vega-lite>
       <p> {{ chart }} </p>
       <div style="padding: 0 50px 0 50px; font-size: 12px">
         <p>*The black "baseline" represents the averages of both LoC and commits across all repositories within the selected repository's overlying Facade organization during the calendar year shown. Wherever this bar stretches to shows how far above or below the raw value of the statistic is from the regular average.</p>
@@ -16,18 +14,12 @@
 <script>
 import { mapState } from 'vuex'
 import AugurStats from 'AugurStats'
-import Spinner from '../Spinner.vue'
-
 export default {
   props: ['source', 'citeUrl', 'citeText', 'title', 'disableRollingAverage', 'alwaysByDate', 'data', 'field'],
   data() {
     return {
-      values: [],
-      loaded: false
+      values: []
     }
-  },
-  components: {
-    Spinner
   },
   computed: {
     repo () {
@@ -105,25 +97,42 @@ export default {
                 "clip": true
               },
               "encoding": {
+                  // "column": {
+                  //   "field": "name", "type": "ordinal",
+                  //   "scale": {"rangeStep": 12},
+                  //   "axis": {"title": ""}
+                  // },
                   "y": {
                     "field": "net", "type": "quantitative",
                     "axis": {"title": "net loc","grid": false},
                     "scale": {
+                      // "domain": [-1000000, 1000000],
                       "nice": false,
                     }
                   },
                   "y2": {
                     "field": "avg_loc", "type": "quantitative","axis": {"title": "","grid": false},
                     "scale": {
-                      "nice": false,
+                      // "domain": [-1000000, 1000000],
+                     "nice": false,
                     }
                   },
                   "x": {
                     "field": "loc_location", "type": 'quantitative',
+                    // "field": "name", "type": "ordinal",
+                    // "scale": {"rangeStep": 12},
                     "axis": {"title": "", "labels": false},
+                    // "sort": {
+                    //   "field": "net",
+                    //   "op": "mean",
+                    //   "order": "descending"
+                    // },
                   },
                   "color": {
                     "value": "#FF3647"
+                    // "field": "name", "type": "ordinal",
+                    // "scale": {"range": ["black", "#CC0314", "#1403CC","#098118","#CCAE00","#C24F00","#5E0081","#0FA1C1","#BD00B3"]},
+
                   }
               },
             },
@@ -132,6 +141,7 @@ export default {
                 {
                   "calculate": "datum.index - 0.125", "as": "commit_location"
                 },
+
               ],
               "mark": {
                 "type": "bar",
@@ -158,6 +168,8 @@ export default {
                   },
                   "color": {
                     "value": "#4736FF",
+                    // "field": "name", "type": "ordinal",
+                    // "scale": {"range": ["#666666", "#FF697A", "#7A69FF","#6FE77E","#FFFF4C","#FFB564","#C451E7","#75FFFF","#FF65FF"]},
                     "legend": null
                   }
               },
@@ -182,6 +194,7 @@ export default {
                 },
                 "y": {
                   "value": 280,
+                  // "field": "y", "type": 'quantitative',
                   "axis": {
                     "title": "",
                     "grid": false
@@ -217,6 +230,7 @@ export default {
                       "nice": false,
                     }
                 },
+                
               },
             },
             {
@@ -265,8 +279,10 @@ export default {
                   "scale": {"range": ["#4736FF", "#FF3647"]},
                   "legend": {"offset": -16}
                 }
+                
               },
             },
+
           ],
           "resolve": {"scale": {"y": "independent", "color": "independent"}},
       }
@@ -297,18 +313,6 @@ export default {
           fields[split[0]] = split[1].split('+')
         }
       })
-      if (this.data) {
-        processGitData(this.data)
-      } else {
-        let repo = window.AugurAPI.Repo({ gitURL: this.gitRepo })
-        repo[this.source]().then((data) => {
-          console.log("batch data", data)
-          processData(data)
-        }, () => {
-          //this.renderError()
-        }) // end batch request
-      }
-
       $(this.$el).find('.showme, .hidefirst').removeClass('invis')
       $(this.$el).find('.stackedbarchart').removeClass('loader')
       let processGitData = (data) => {
@@ -380,28 +384,21 @@ export default {
           // this.values.push(d[0])
           // console.log("repo data", data)
           this.values = data
-          config.data = {"values": this.values}
         })
       }
-      this.loaded = true
-      this.reloadImage(config)
+      if (this.data) {
+        processData(this.data)
+      } else {
+        let repo = window.AugurAPI.Repo({ gitURL: this.gitRepo })
+        repo[this.source]().then((data) => {
+          console.log("batch data", data)
+          processData(data)
+        }, () => {
+          //this.renderError()
+        }) // end batch request
+      }
       return config
     },
-  },
-  methods: {
-    respec(){this.spec;},
-    reloadImage (config) {
-      console.log(config.data, this.source)
-      if (config.data.length == 0){
-        this.spec;
-        this.renderError()
-        return
-      }
-      vegaEmbed('#' + this.source, config, {tooltip: {offsetY: -110}, mode: 'vega-lite'}) 
-    }
-  },
-  mounted() {
-    this.spec;
-  },
+  }
 }
 </script>

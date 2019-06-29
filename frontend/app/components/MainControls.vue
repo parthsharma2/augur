@@ -12,7 +12,6 @@
                 <div class="col col-3" align="center" id="comparetext"><h6>Compare from your repos:</h6></div>
                 <div style="text-align:center !important" class="row col col-4" v-click-outside="stopSelecting">
                   <div class="col col-6" style="display:inline !important" @click="keepSelecting">
-
                     <multiselect class="search reposearch special" v-model="project" :options="projects" :placeholder="project"></multiselect>
                   </div>
                   <div class="col col-6" style="display:inline !important" @click="keepSelecting">
@@ -220,7 +219,6 @@
             let url = repo.url
             let first = url.indexOf(".")
             let last = url.lastIndexOf(".")
-
             let option = null
             if (first == last)
               option = url.slice(url.indexOf('/') + 1)
@@ -270,7 +268,6 @@
         // document.querySelector('.section.collapsible').classList.toggle('collapsed')
       },
       onStartDateChange (e) {
-
         var date = null
         // Date.parse((this.$refs.startMonth.value + "/01/" + this.$refs.startYear.value))
         if (e.target.value > 12) {
@@ -288,13 +285,12 @@
           this.$store.commit('setDates', {
             startDate: date
           })
-        }, 100);
+        }, 500);
       },
       onEndDateChange (e) {
         var date = null
         // Date.parse((this.$refs.startMonth.value + "/01/" + this.$refs.startYear.value))
         if (e.target.value > 12) {
-
           date = Date.parse((this.endMonth + "/01/" + e.target.value))
         } else {
           let month = (parseInt(e.target.value) + 1).toString()
@@ -309,7 +305,7 @@
           this.$store.commit('setDates', {
             endDate: date
           })
-        }, 100);
+        }, 500);
       },
       onTrailingAverageChange (e) {
         this.info.days = e.target.value
@@ -450,7 +446,6 @@
       window.$(this.$el).find('.multiselect__input').addClass('search')
       window.$(this.$el).find('.multiselect__input').addClass('reposearch')
       console.log("CHECKING", this.$store.state.startDate.getMonth(), this.$store.state.startDate.getUTCFullYear(), this.$store.state.endDate.getMonth(), this.$store.state.endDate.getUTCFullYear())
-
       if (this.projects.length == 1) this.project = this.projects[0]
     }
 
